@@ -6,21 +6,21 @@ For information about the source dataset please see the attached activityData.zi
 
 To produce my summary dataset I created the attached run_anlysis.R script that uses the following methodology.
     
-    1. Loaded features.txt containing the variable names for the data in X_test.txt, X_test.txt containing the observations captured by Accelerometer and Gyroscope for each of the test subjects and activities, y_test.txt containing numeric ids indicating measured activity for each observation, and subject_test.txt containing the numeric unique id of the subject (which I labeled volunteer to help me think about the data) for each observation. 
+1. Loaded features.txt containing the variable names for the data in X_test.txt, X_test.txt containing the observations captured by Accelerometer and Gyroscope for each of the test subjects and activities, y_test.txt containing numeric ids indicating measured activity for each observation, and subject_test.txt containing the numeric unique id of the subject (which I labeled volunteer to help me think about the data) for each observation. 
 
-        After loading these files I added column names to the x.test, y.test, and subject.test datasets and then used cbind to combine the 3 datasets. 
+After loading these files I added column names to the x.test, y.test, and subject.test datasets and then used cbind to combine the 3 datasets. 
 
-        Next I performed the exact same steps for the _train.txt files and .train variables. 
+Next I performed the exact same steps for the _train.txt files and .train variables. 
 
-        Finally I used rbind to merge the mergedData.test and mergedData.train datasets, creating one mergedData data set. 
+Finally I used rbind to merge the mergedData.test and mergedData.train datasets, creating one mergedData data set. 
 
-    2. The final tidy dataset includes the means for each mean and each standard deviation variable for the sujects (volunteers) and activities. In order to extract only these variable types I looked for the pattern "std" or "mean" in the variable names. I also excluded meanFreq and angle variables because I felt those were measurements of something other than the mean or standard deviation. 
+2. The final tidy dataset includes the means for each mean and each standard deviation variable for the sujects (volunteers) and activities. In order to extract only these variable types I looked for the pattern "std" or "mean" in the variable names. I also excluded meanFreq and angle variables because I felt those were measurements of something other than the mean or standard deviation. 
 
-    3. Loaded activity_labels.txt containing descriptive activity names and then used merge to join the mergedData dataset with activity.labels using the activity.id column. 
+3. Loaded activity_labels.txt containing descriptive activity names and then used merge to join the mergedData dataset with activity.labels using the activity.id column. 
 
-    4. In order to clean up the variable names and make them I bit easier to understand I added a "." character between the different terms that make up the variable description. 
+4. In order to clean up the variable names and make them I bit easier to understand I added a "." character between the different terms that make up the variable description. 
 
-        The specific terms are:
+The specific terms are:
     
         t or f: variables are prefixed with either t or f indicating whether they are "time domain measurements" or measurements that had a Fast Fourier Transform (FFT) applied to them respectively 
 
@@ -36,7 +36,7 @@ To produce my summary dataset I created the attached run_anlysis.R script that u
 
         #### More information is available in the features_info.txt file included with the original dataset used for this analysis in the attached activityData.zip file. 
 
-    5. Finally, in order to produce my tidy dataset I grouped the mergedData by activity level and volunteer (subject) and then applied the mean function on the std and mean variables for each unique volunteer / activity combination.
+5. Finally, in order to produce my tidy dataset I grouped the mergedData by activity level and volunteer (subject) and then applied the mean function on the std and mean variables for each unique volunteer / activity combination.
 
 Please see my code and descriptive comments below that further break out and explains how I accomplished the above steps. Also I have included a file, CODEBOOK.txt that lists all the columns in my final tidy dataset, their datatype, as well as a sample of what data will be found in each field. 
 
