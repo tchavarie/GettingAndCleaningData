@@ -1,91 +1,122 @@
-Create data directory and download project files
+=======================================================================
+Mean Summary from Human Activity Recognition Using Smartphones Dataset
+=======================================================================
+
+For information about the source dataset please see the attached activityData.zip file. There is a README.txt in that file that describes the source data and how it was collected. 
+
+To produce my summary dataset I created the attached run_anlysis.R script that uses the following methodology.
+    
+    1. Loaded features.txt containing the variable names for the data in X_test.txt, X_test.txt containing the observations captured by Accelerometer and Gyroscope for each of the test subjects and activities, y_test.txt containing numeric ids indicating measured activity for each observation, and subject_test.txt containing the numeric unique id of the subject (which I labeled volunteer to help me think about the data) for each observation. 
+
+        After loading these files I added column names to the x.test, y.test, and subject.test datasets and then used cbind to combine the 3 datasets. 
+
+        Next I performed the exact same steps for the _train.txt files and .train variables. 
+
+        Finally I used rbind to merge the mergedData.test and mergedData.train datasets, creating one mergedData data set. 
+
+    2. The final tidy dataset includes the means for each mean and each standard deviation variable for the sujects (volunteers) and activities. In order to extract only these variable types I looked for the pattern "std" or "mean" in the variable names. I also excluded meanFreq and angle variables because I felt those were measurements of something other than the mean or standard deviation. 
+
+    3. Loaded activity_labels.txt containing descriptive activity names and then used merge to join the mergedData dataset with activity.labels using the activity.id column. 
+
+    4. In order to clean up the variable names and make them I bit easier to understand I added a "." character between the different terms that make up the variable description. 
+
+        The specific terms are:
+    
+        t or f: variables are prefixed with either t or f indicating whether they are "time domain measurements" or measurements that had a Fast Fourier Transform (FFT) applied to them respectively 
+
+        Body or Gravity: indicates the signal measured was a body or gravity signal
+
+        Acc or Gyro: indicates whether the signal was captured by the accelerometer or gyroscope
+
+        Jerk and / or Mag: indicates the variable is a measure of a derived Jerk or Magnitude 
+
+        std or mean: indicates whether the variable is the standard deviation or mean of the captured signal
+
+        X, Y, Z: these are the breakouts of the 3-axial signal data
+
+        #### More information is available in the features_info.txt file included with the original dataset used for this analysis in the attached activityData.zip file. 
+
+    5. Finally, in order to produce my tidy dataset I grouped the mergedData by activity level and volunteer (subject) and then applied the mean function on the std and mean variables for each unique volunteer / activity combination.
+
+Please see my code and descriptive comments below that further break out and explains how I accomplished the above steps. 
+
+=======================================================================
+
+
+### Create data directory and download project files
 
     if(!file.exists("./data")) {dir.create("./data")}
     fileUrl = "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
     download.file(fileUrl, destfile = "./data/activityData.zip", method="curl")
 
-Unzip files
+### Unzip files
 
     unzip("./data/activityData.zip", exdir = "./data")
 
-Load features dataset containing variable data for the x datasets
+### Load features dataset containing variable data for the x datasets
 
     features <- read.table("./data/UCI HAR Dataset/features.txt")
 
-Test Dataset
+## Test Dataset
 ============
 
-Load x, y, and subject test datasets
+### Load x, y, and subject test datasets
 
     x.test <- read.table("./data/UCI HAR Dataset/test/X_test.txt")
     y.test <- read.table("./data/UCI HAR Dataset/test/y_test.txt")
     subject.test <- read.table("./data/UCI HAR Dataset/test/subject_test.txt")
 
-Use colnames to set variable names for x, y, and subject test datasets
+### Use colnames to set variable names for x, y, and subject test datasets
 
     colnames(x.test) <- gsub('[.]','',make.names(as.vector(features$V2), unique = TRUE))
     colnames(y.test) <- c("activity.id")
     colnames(subject.test) <- c("volunteer")
 
-Use cbind to merge x, y, and subject datasets
+### Use cbind to merge x, y, and subject datasets
 
     mergedData.test <- cbind(x.test, y.test, subject.test)
 
-Train Dataset
+## Train Dataset
 =============
 
-Load x, y, and subject train datasets
+### Load x, y, and subject train datasets
 
     x.train <- read.table("./data/UCI HAR Dataset/train/X_train.txt")
     y.train <- read.table("./data/UCI HAR Dataset/train/y_train.txt")
     subject.train <- read.table("./data/UCI HAR Dataset/train/subject_train.txt")
 
-Use colnames to set variable names for x, y, and subject train datasets
+### Use colnames to set variable names for x, y, and subject train datasets
 
     colnames(x.train) <- gsub('[.]','',make.names(as.vector(features$V2), unique = TRUE))
     colnames(y.train) <- c("activity.id")
     colnames(subject.train) <- c("volunteer")
 
-Use cbind to merge x, y, and subject datasets
+### Use cbind to merge x, y, and subject datasets
 
     mergedData.train <- cbind(x.train, y.train, subject.train)
 
-Use rbind to merge test and train datasets
+### Use rbind to merge test and train datasets
 
     mergedData <- rbind(mergedData.test, mergedData.train)
 
-Extract only the mean and std variables along with activity id and
-volunteer
+### Extract only the mean and std variables along with activity id and volunteer
 
     library(dplyr)
-
-    ## 
-    ## Attaching package: 'dplyr'
-    ## 
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-    ## 
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
-
     mergedData <- select(mergedData, 
                          matches("std|mean"), activity.id, 
                          volunteer, -(matches("meanFreq|angle")))
 
-Load activity labels dataset containing english descriptions for
-activity id
+### Load activity labels dataset containing english descriptions for activity id
 
     activity.labels <- read.table("./data/UCI HAR Dataset/activity_labels.txt")
     colnames(activity.labels) <- c("activity.id","activity.label")
 
-Add english descriptions using activity.id to merge activity labels with
-main merged dataset
+### Add english descriptions using activity.id to merge activity labels with
+### main merged dataset
 
     mergedData <- merge(mergedData, activity.labels)
 
-Finalize cleanup of variable names
+## Finalize cleanup of variable names
 ==================================
 
     names(mergedData) <- gsub('^t','t.',names(mergedData))
@@ -104,90 +135,18 @@ Finalize cleanup of variable names
     names(mergedData) <- gsub('Y$','.Y',names(mergedData))
     names(mergedData) <- gsub('Z$','.Z',names(mergedData))
 
-Tidy Dataset
+## Tidy Dataset
 ------------
 
-Group mergedData by activity and subject
+### Group mergedData by activity and subject
 
     activity.subject <- group_by(mergedData, activity.label, volunteer)
 
-Apply the mean function along all variables in the grouped data
+### Apply the mean function along all variables in the grouped data
 
     tidy.means <- summarise_each(activity.subject, funs(mean))
     tidy.means <- as.data.frame(tidy.means)
-    str(tidy.means)
 
-    ## 'data.frame':    180 obs. of  69 variables:
-    ##  $ activity.label                : Factor w/ 6 levels "LAYING","SITTING",..: 1 1 1 1 1 1 1 1 1 1 ...
-    ##  $ volunteer                     : int  1 2 3 4 5 6 7 8 9 10 ...
-    ##  $ activity.id                   : num  6 6 6 6 6 6 6 6 6 6 ...
-    ##  $ t.Body.Acc.mean.X             : num  0.222 0.281 0.276 0.264 0.278 ...
-    ##  $ t.Body.Acc.mean.Y             : num  -0.0405 -0.0182 -0.019 -0.015 -0.0183 ...
-    ##  $ t.Body.Acc.mean.Z             : num  -0.113 -0.107 -0.101 -0.111 -0.108 ...
-    ##  $ t.Body.Acc.std.X              : num  -0.928 -0.974 -0.983 -0.954 -0.966 ...
-    ##  $ t.Body.Acc.std.Y              : num  -0.837 -0.98 -0.962 -0.942 -0.969 ...
-    ##  $ t.Body.Acc.std.Z              : num  -0.826 -0.984 -0.964 -0.963 -0.969 ...
-    ##  $ t.Gravity.Acc.mean.X          : num  -0.249 -0.51 -0.242 -0.421 -0.483 ...
-    ##  $ t.Gravity.Acc.mean.Y          : num  0.706 0.753 0.837 0.915 0.955 ...
-    ##  $ t.Gravity.Acc.mean.Z          : num  0.446 0.647 0.489 0.342 0.264 ...
-    ##  $ t.Gravity.Acc.std.X           : num  -0.897 -0.959 -0.983 -0.921 -0.946 ...
-    ##  $ t.Gravity.Acc.std.Y           : num  -0.908 -0.988 -0.981 -0.97 -0.986 ...
-    ##  $ t.Gravity.Acc.std.Z           : num  -0.852 -0.984 -0.965 -0.976 -0.977 ...
-    ##  $ t.Body.Acc.Jerk.mean.X        : num  0.0811 0.0826 0.077 0.0934 0.0848 ...
-    ##  $ t.Body.Acc.Jerk.mean.Y        : num  0.00384 0.01225 0.0138 0.00693 0.00747 ...
-    ##  $ t.Body.Acc.Jerk.mean.Z        : num  0.01083 -0.0018 -0.00436 -0.00641 -0.00304 ...
-    ##  $ t.Body.Acc.Jerk.std.X         : num  -0.958 -0.986 -0.981 -0.978 -0.983 ...
-    ##  $ t.Body.Acc.Jerk.std.Y         : num  -0.924 -0.983 -0.969 -0.942 -0.965 ...
-    ##  $ t.Body.Acc.Jerk.std.Z         : num  -0.955 -0.988 -0.982 -0.979 -0.985 ...
-    ##  $ t.Body.Gyro.mean.X            : num  -0.01655 -0.01848 -0.02082 -0.00923 -0.02189 ...
-    ##  $ t.Body.Gyro.mean.Y            : num  -0.0645 -0.1118 -0.0719 -0.093 -0.0799 ...
-    ##  $ t.Body.Gyro.mean.Z            : num  0.149 0.145 0.138 0.17 0.16 ...
-    ##  $ t.Body.Gyro.std.X             : num  -0.874 -0.988 -0.975 -0.973 -0.979 ...
-    ##  $ t.Body.Gyro.std.Y             : num  -0.951 -0.982 -0.977 -0.961 -0.977 ...
-    ##  $ t.Body.Gyro.std.Z             : num  -0.908 -0.96 -0.964 -0.962 -0.961 ...
-    ##  $ t.Body.Gyro.Jerk.mean.X       : num  -0.107 -0.102 -0.1 -0.105 -0.102 ...
-    ##  $ t.Body.Gyro.Jerk.mean.Y       : num  -0.0415 -0.0359 -0.039 -0.0381 -0.0404 ...
-    ##  $ t.Body.Gyro.Jerk.mean.Z       : num  -0.0741 -0.0702 -0.0687 -0.0712 -0.0708 ...
-    ##  $ t.Body.Gyro.Jerk.std.X        : num  -0.919 -0.993 -0.98 -0.975 -0.983 ...
-    ##  $ t.Body.Gyro.Jerk.std.Y        : num  -0.968 -0.99 -0.987 -0.987 -0.984 ...
-    ##  $ t.Body.Gyro.Jerk.std.Z        : num  -0.958 -0.988 -0.983 -0.984 -0.99 ...
-    ##  $ t.Body.Acc.Mag.mean           : num  -0.842 -0.977 -0.973 -0.955 -0.967 ...
-    ##  $ t.Body.Acc.Mag.std            : num  -0.795 -0.973 -0.964 -0.931 -0.959 ...
-    ##  $ t.Gravity.Acc.Mag.mean        : num  -0.842 -0.977 -0.973 -0.955 -0.967 ...
-    ##  $ t.Gravity.Acc.Mag.std         : num  -0.795 -0.973 -0.964 -0.931 -0.959 ...
-    ##  $ t.Body.Acc.Jerk.Mag.mean      : num  -0.954 -0.988 -0.979 -0.97 -0.98 ...
-    ##  $ t.Body.Acc.Jerk.Mag.std       : num  -0.928 -0.986 -0.976 -0.961 -0.977 ...
-    ##  $ t.Body.Gyro.Mag.mean          : num  -0.875 -0.95 -0.952 -0.93 -0.947 ...
-    ##  $ t.Body.Gyro.Mag.std           : num  -0.819 -0.961 -0.954 -0.947 -0.958 ...
-    ##  $ t.Body.Gyro.Jerk.Mag.mean     : num  -0.963 -0.992 -0.987 -0.985 -0.986 ...
-    ##  $ t.Body.Gyro.Jerk.Mag.std      : num  -0.936 -0.99 -0.983 -0.983 -0.984 ...
-    ##  $ f.Body.Acc.mean.X             : num  -0.939 -0.977 -0.981 -0.959 -0.969 ...
-    ##  $ f.Body.Acc.mean.Y             : num  -0.867 -0.98 -0.961 -0.939 -0.965 ...
-    ##  $ f.Body.Acc.mean.Z             : num  -0.883 -0.984 -0.968 -0.968 -0.977 ...
-    ##  $ f.Body.Acc.std.X              : num  -0.924 -0.973 -0.984 -0.952 -0.965 ...
-    ##  $ f.Body.Acc.std.Y              : num  -0.834 -0.981 -0.964 -0.946 -0.973 ...
-    ##  $ f.Body.Acc.std.Z              : num  -0.813 -0.985 -0.963 -0.962 -0.966 ...
-    ##  $ f.Body.Acc.Jerk.mean.X        : num  -0.957 -0.986 -0.981 -0.979 -0.983 ...
-    ##  $ f.Body.Acc.Jerk.mean.Y        : num  -0.922 -0.983 -0.969 -0.944 -0.965 ...
-    ##  $ f.Body.Acc.Jerk.mean.Z        : num  -0.948 -0.986 -0.979 -0.975 -0.983 ...
-    ##  $ f.Body.Acc.Jerk.std.X         : num  -0.964 -0.987 -0.983 -0.98 -0.986 ...
-    ##  $ f.Body.Acc.Jerk.std.Y         : num  -0.932 -0.985 -0.971 -0.944 -0.966 ...
-    ##  $ f.Body.Acc.Jerk.std.Z         : num  -0.961 -0.989 -0.984 -0.98 -0.986 ...
-    ##  $ f.Body.Gyro.mean.X            : num  -0.85 -0.986 -0.97 -0.967 -0.976 ...
-    ##  $ f.Body.Gyro.mean.Y            : num  -0.952 -0.983 -0.978 -0.972 -0.978 ...
-    ##  $ f.Body.Gyro.mean.Z            : num  -0.909 -0.963 -0.962 -0.961 -0.963 ...
-    ##  $ f.Body.Gyro.std.X             : num  -0.882 -0.989 -0.976 -0.975 -0.981 ...
-    ##  $ f.Body.Gyro.std.Y             : num  -0.951 -0.982 -0.977 -0.956 -0.977 ...
-    ##  $ f.Body.Gyro.std.Z             : num  -0.917 -0.963 -0.967 -0.966 -0.963 ...
-    ##  $ f.Body.Acc.Mag.mean           : num  -0.862 -0.975 -0.966 -0.939 -0.962 ...
-    ##  $ f.Body.Acc.Mag.std            : num  -0.798 -0.975 -0.968 -0.937 -0.963 ...
-    ##  $ f.Body.Body.Acc.Jerk.Mag.mean : num  -0.933 -0.985 -0.976 -0.962 -0.977 ...
-    ##  $ f.Body.Body.Acc.Jerk.Mag.std  : num  -0.922 -0.985 -0.975 -0.958 -0.976 ...
-    ##  $ f.Body.Body.Gyro.Mag.mean     : num  -0.862 -0.972 -0.965 -0.962 -0.968 ...
-    ##  $ f.Body.Body.Gyro.Mag.std      : num  -0.824 -0.961 -0.955 -0.947 -0.959 ...
-    ##  $ f.Body.Body.Gyro.Jerk.Mag.mean: num  -0.942 -0.99 -0.984 -0.984 -0.985 ...
-    ##  $ f.Body.Body.Gyro.Jerk.Mag.std : num  -0.933 -0.989 -0.983 -0.983 -0.983 ...
-
-Write Table
+### Write dataset to file
 
     write.table(tidy.means,file = "./data/mytidydata.txt", row.names = FALSE)
