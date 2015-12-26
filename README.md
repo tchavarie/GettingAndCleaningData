@@ -38,7 +38,7 @@ To produce my summary dataset I created the attached run_anlysis.R script that u
 
     5. Finally, in order to produce my tidy dataset I grouped the mergedData by activity level and volunteer (subject) and then applied the mean function on the std and mean variables for each unique volunteer / activity combination.
 
-Please see my code and descriptive comments below that further break out and explains how I accomplished the above steps. 
+Please see my code and descriptive comments below that further break out and explains how I accomplished the above steps. Also I have included a file, CODEBOOK.txt that lists all the columns in my final tidy dataset, their datatype, as well as a sample of what data will be found in each field. 
 
 =======================================================================
 
