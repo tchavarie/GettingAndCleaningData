@@ -58,21 +58,21 @@ mergedData <- merge(mergedData, activity.labels)
 
 
 ## Finalize cleanup of variable names 
-names(mergedData) <- gsub('^t','t.',names(mergedData))
-names(mergedData) <- gsub('^f','f.',names(mergedData))
+names(mergedData) <- gsub('^t','time.',names(mergedData))
+names(mergedData) <- gsub('^f','fft.',names(mergedData))
 
-names(mergedData) <- gsub('Body','Body.',names(mergedData))
-names(mergedData) <- gsub('Gravity','Gravity.',names(mergedData))
+names(mergedData) <- gsub('Body','body.',names(mergedData))
+names(mergedData) <- gsub('Gravity','gravity.',names(mergedData))
 
-names(mergedData) <- gsub('Acc','Acc.',names(mergedData))
-names(mergedData) <- gsub('Gyro','Gyro.',names(mergedData))
+names(mergedData) <- gsub('Acc','accel.',names(mergedData))
+names(mergedData) <- gsub('Gyro','gyro.',names(mergedData))
 
-names(mergedData) <- gsub('Jerk','Jerk.',names(mergedData))
-names(mergedData) <- gsub('Mag','Mag.',names(mergedData))
+names(mergedData) <- gsub('Jerk','jerk.',names(mergedData))
+names(mergedData) <- gsub('Mag','mag.',names(mergedData))
 
-names(mergedData) <- gsub('X$','.X',names(mergedData))
-names(mergedData) <- gsub('Y$','.Y',names(mergedData))
-names(mergedData) <- gsub('Z$','.Z',names(mergedData))
+names(mergedData) <- gsub('X$','.x',names(mergedData))
+names(mergedData) <- gsub('Y$','.y',names(mergedData))
+names(mergedData) <- gsub('Z$','.z',names(mergedData))
 
 
 ### Tidy Dataset

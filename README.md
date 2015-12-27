@@ -27,22 +27,25 @@ of something other than the mean or standard deviation.
 dataset with activity.labels using the activity.id column. 
 
 4 - In order to clean up the variable names and make them I bit easier to understand I added a "." character 
-between the different terms that make up the variable description. 
+between the different terms that make up the variable description. Given the number of terms
+in the variable names I felt either a delimiter character or use of a mixed case (camel case)
+variable name would be necessary in order to make the names understandable as a glance when 
+reviewing the dataset. 
 
 The specific terms are:
     
-        t or f: variables are prefixed with either t or f indicating whether they are "time domain measurements" 
+        time or fft: variables are prefixed with either time or fft indicating whether they are "time domain measurements" 
 			or measurements that had a Fast Fourier Transform (FFT) applied to them respectively 
 
-        Body or Gravity: indicates the signal measured was a body or gravity signal
+        body or gravity: indicates the signal measured was a body or gravity signal
 
-        Acc or Gyro: indicates whether the signal was captured by the accelerometer or gyroscope
+        accel or gyro: indicates whether the signal was captured by the accelerometer or gyroscope
 
-        Jerk and / or Mag: indicates the variable is a measure of a derived Jerk or Magnitude 
+        jerk and / or mag: indicates the variable is a measure of a derived Jerk or Magnitude 
 
         std or mean: indicates whether the variable is the standard deviation or mean of the captured signal
 
-        X, Y, Z: these are the breakouts of the 3-axial signal data
+        x, y, z: these are the breakouts of the 3-axial signal data
 
         #### More information is available in the features_info.txt file included with the original dataset 
 		used for this analysis in the attached activityData.zip file. 
